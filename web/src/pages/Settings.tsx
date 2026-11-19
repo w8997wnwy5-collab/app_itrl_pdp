@@ -4,6 +4,7 @@ import { TEASE_LEVELS, type TeaseLevel } from "../../../shared/game";
 import type { Dashboard, Me } from "../../../shared/types";
 import { Avatar } from "../components/Avatar";
 import { CharacterCreator } from "../components/CharacterCreator";
+import { InstallHint } from "../components/InstallHint";
 import { TopBar } from "../components/Layout";
 import { Sheet } from "../components/Sheet";
 import { api, errorMessage } from "../lib/api";
@@ -113,6 +114,7 @@ export function Settings() {
       </section>
 
       <h2 className="section-title">Notifiche</h2>
+      <InstallHint />
       <section className="card">
         <div className="setting">
           <div className="setting__text">

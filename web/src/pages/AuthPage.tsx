@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { randomAvatar } from "../../../shared/avatar";
 import type { Me } from "../../../shared/types";
 import { Avatar } from "../components/Avatar";
+import { InstallHint } from "../components/InstallHint";
 import { api, errorMessage } from "../lib/api";
 import { useSession } from "../lib/session";
 import type { Mood } from "../../../shared/game";
@@ -78,6 +79,8 @@ export function AuthPage() {
         <h1>Chi Perde Vince</h1>
         <p>La sfida del giovedì ⚖️ chi perde più chili vince!</p>
       </div>
+
+      <InstallHint beforeSignup />
 
       <div className="card">
         {firstSetup ? (

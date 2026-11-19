@@ -34,8 +34,7 @@ export const config = {
   claudeModel: process.env.CLAUDE_MODEL?.trim() || "claude-opus-5-5",
   vapidPublicKey: process.env.VAPID_PUBLIC_KEY?.trim() || undefined,
   vapidPrivateKey: process.env.VAPID_PRIVATE_KEY?.trim() || undefined,
-  vapidSubject:
-    process.env.VAPID_SUBJECT?.trim() ||
-    (publicUrl.startsWith("https://") ? publicUrl : "mailto:sfida@chiperdevince.app"),
+  /** Contact for push services; if unset the app's own https address is used. */
+  vapidSubject: process.env.VAPID_SUBJECT?.trim() || undefined,
   schedulerEnabled: flag("SCHEDULER") ?? true,
 };

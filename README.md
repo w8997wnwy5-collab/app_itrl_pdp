@@ -56,16 +56,28 @@ e accedi con `demo@chiperdevince.it` / `demo1234`.
 
 ## Metterla online
 
-Per usarla dai telefoni l'app deve stare su un indirizzo **HTTPS** (la fotocamera, le notifiche push e l'installazione come app lo richiedono). È un unico server Node con un database SQLite in un file: basta un hosting con un **disco persistente**.
+Per usarla dai telefoni l'app deve stare su un indirizzo **HTTPS** (la fotocamera, le notifiche push e l'installazione come app lo richiedono). È un unico server Node con un database SQLite in un file: serve un hosting con un **disco persistente**. GitHub Pages non basta: ospita solo pagine statiche, mentre qui servono un database condiviso, i login e l'invio delle notifiche agli orari stabiliti.
 
-### Con Docker
+### Con Render (anche tutto da telefono)
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/w8997wnwy5-collab/app_itrl_pdp)
+
+1. Tocca il pulsante qui sopra e accedi a Render con GitHub.
+2. Render legge `render.yaml`: servizio Docker *Starter* a Francoforte con un disco da 1 GB montato su `/data` (circa 7 $ al mese + 0,25 $ per il disco; il piano gratuito non ha dischi e va in pausa, quindi niente notifiche).
+3. Conferma con **Deploy Blueprint**, inserisci il metodo di pagamento e aspetta qualche minuto la prima build.
+4. Apri l'indirizzo `https://chi-perde-vince….onrender.com` e registrati per primo: diventi l'organizzatore.
+5. (Facoltativo) In *Environment* aggiungi `ANTHROPIC_API_KEY` per l'avatar con l'AI, poi *Save*.
+
+Gli aggiornamenti del codice si pubblicano da Render con **Manual Deploy → Deploy latest commit** (il deploy automatico è spento per sicurezza).
+
+### Con Docker (server tuo)
 
 ```bash
 docker build -t chi-perde-vince .
 ```
 
 ```bash
-docker run -d --name chi-perde-vince -p 3000:3000 -v cpv-data:/data -e PUBLIC_URL=https://sfida.miaazienda.it -e VAPID_SUBJECT=mailto:tuo.nome@azienda.it chi-perde-vince
+docker run -d --name chi-perde-vince -p 3000:3000 -v cpv-data:/data chi-perde-vince
 ```
 
 Davanti mettici un proxy HTTPS, per esempio [Caddy](https://caddyserver.com) con un `Caddyfile` così:
@@ -76,9 +88,7 @@ sfida.miaazienda.it {
 }
 ```
 
-### Su un hosting (Railway, Render, Fly.io...)
-
-Usa il `Dockerfile` del progetto, monta un volume persistente su `/data` e imposta le variabili d'ambiente qui sotto. Senza volume il database si cancella a ogni deploy.
+Va bene anche qualsiasi altro hosting che esegua il `Dockerfile` con un volume persistente su `/data` (Railway, Fly.io...). Senza volume il database si cancella a ogni deploy.
 
 ### Senza Docker
 
@@ -103,7 +113,7 @@ Tutte facoltative (vedi `.env.example`):
 | `ANTHROPIC_API_KEY` | Attiva Claude per l'avatar dalla foto e la Gazzetta scritta dall'AI |
 | `CLAUDE_MODEL` | Modello Claude (default `claude-opus-5-5`) |
 | `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` | Chiavi per le notifiche push; se vuote vengono generate e salvate nel database |
-| `VAPID_SUBJECT` | Contatto per i servizi push (`mailto:` o `https://`): mettine uno vero |
+| `VAPID_SUBJECT` | Contatto per i servizi push (`mailto:` o `https://`); se vuoto si usa l'indirizzo https dell'app |
 | `SCHEDULER` | `0` per disattivare promemoria e sfottò programmati |
 | `COOKIE_SECURE`, `TRUST_PROXY` | Già corretti in produzione dietro un proxy HTTPS |
 

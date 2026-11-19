@@ -31,6 +31,14 @@ export function getVapidKeys(): VapidKeys {
   return cachedKeys;
 }
 
+/** mailto:/https: contact sent to push services (Apple rejects invalid ones). */
+export function vapidSubject(): string {
+  if (config.vapidSubject) return config.vapidSubject;
+  const url = config.publicUrl || getSetting("public_url");
+  if (url?.startsWith("https://")) return url;
+  return "mailto:sfida@chiperdevince.app";
+}
+
 export interface NotificationInput {
   kind: NotificationKind;
   title: string;
@@ -66,7 +74,7 @@ async function pushToUser(userId: number, payload: NotificationInput & { id: num
         await sendNotification({ endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } }, body, {
           TTL: 6 * 60 * 60,
           urgency: "normal",
-          vapidDetails: { subject: config.vapidSubject, publicKey: keys.publicKey, privateKey: keys.privateKey },
+          vapidDetails: { subject: vapidSubject(), publicKey: keys.publicKey, privateKey: keys.privateKey },
         });
       } catch (err) {
         if (err instanceof WebPushError && (err.statusCode === 404 || err.statusCode === 410)) {

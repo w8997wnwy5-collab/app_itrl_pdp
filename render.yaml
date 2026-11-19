@@ -1,0 +1,24 @@
+# Render Blueprint: one web service (Docker) with a persistent disk for the SQLite database.
+# Deploy from the phone: https://render.com/deploy?repo=https://github.com/w8997wnwy5-collab/app_itrl_pdp
+services:
+  - type: web
+    name: chi-perde-vince
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    # Disks need a paid instance: Starter is enough for an office.
+    plan: starter
+    region: frankfurt
+    healthCheckPath: /api/health
+    # Updates are deployed by hand from the Render dashboard ("Manual Deploy").
+    autoDeployTrigger: "off"
+    disk:
+      name: dati
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /data
+      - key: PORT
+        value: "10000"

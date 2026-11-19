@@ -10,6 +10,7 @@ import { authRouter } from "./routes/auth";
 import { gameRouter } from "./routes/game";
 import { meRouter } from "./routes/me";
 import { notificationsRouter } from "./routes/notifications";
+import { getSetting, setSetting } from "./settings";
 
 export function createApp() {
   const app = express();
@@ -27,6 +28,19 @@ export function createApp() {
         "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; " +
           "script-src 'self'; connect-src 'self'; worker-src 'self'; manifest-src 'self'; frame-ancestors 'none'; base-uri 'self'",
       );
+    }
+    next();
+  });
+
+  // Remember the public https address (used as contact for push services).
+  let publicUrlKnown = Boolean(config.publicUrl) || Boolean(getSetting("public_url"));
+  app.use((req, _res, next) => {
+    if (!publicUrlKnown && req.protocol === "https") {
+      const host = req.get("host");
+      if (host && !/^(localhost|127\.|\[::1\])/.test(host)) {
+        setSetting("public_url", `https://${host}`);
+        publicUrlKnown = true;
+      }
     }
     next();
   });
